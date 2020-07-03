@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package logic;
+
 import dal.BoardDAL;
 import entity.Board;
 import entity.Host;
@@ -13,12 +14,14 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.ObjIntConsumer;
 import common.ValidationException;
+
 /**
  *
- * @author AmarJ
+ * @author Khosla
  */
-public class BoardLogic extends GenericLogic<Board, BoardDAL>{
-   public static String ID = "id";
+public class BoardLogic extends GenericLogic<Board, BoardDAL> {
+
+    public static String ID = "id";
     public static String NAME = "name";
     public static String URL = "url";
     public static String HOST_ID = "hostId";
@@ -106,15 +109,15 @@ public class BoardLogic extends GenericLogic<Board, BoardDAL>{
     }
 
     public List<String> getColumnNames() {
-        return Arrays.asList("ID", "Url", "Name", "Hostid");
+        return Arrays.asList("ID", "Hostid", "Url", "Name");
     }
 
     public List<String> getColumnCodes() {
-        return Arrays.asList(ID, URL, NAME, HOST_ID);
+        return Arrays.asList(ID, HOST_ID, URL, NAME);
     }
 
     public List<?> extractDataAsList(Board e) {
-        return Arrays.asList(e.getId(), e.getUrl(), e.getName(), e.getHostid());
+        return Arrays.asList(e.getId(), e.getHostid(), e.getUrl(), e.getName());
     }
- 
+
 }

@@ -17,21 +17,11 @@ public abstract class LogicFactory<T> {
   
     public static <T> T getFor(String entityName){
         
-        String[] parts = entityName.split("_");
-        String className = "";
-        for (String part : parts) {
-            className = className + part.substring(0, 1).toUpperCase() +
-                    part.substring(1).toLowerCase();
-        }
-        System.out.println("Class name: " + className);
-        
         try {
-            Class<?> genericClass = Class.forName(PACKAGE + "." + className + SUFFIX);
+            Class<?> genericClass = Class.forName(PACKAGE + "." + entityName + SUFFIX);
             return getFor((Class<T>) genericClass);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-        } catch(IllegalArgumentException ex){
-            ex.printStackTrace();
         }
         return null;
     }
