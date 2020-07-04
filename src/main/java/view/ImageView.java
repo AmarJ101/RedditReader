@@ -91,10 +91,11 @@ public class ImageView extends HttpServlet{
         
         
       
-        //?
-        BoardLogic boardLogic = LogicFactory.getFor("board");
-        Board bEntity = boardLogic.getBoardsWithName("Wallpaper").get(1);//get(1)??
-         
+        
+        BoardLogic boardLogic = LogicFactory.getFor("board");       
+        Board bEntity = boardLogic.getBoardsWithName("EarthPorn").get(0);//get(1)??
+        
+        //System.out.println("---------------------------->>>>>>>>>>>>"+bEntity.getName());
         //
         Reddit obj= new Reddit();
         obj.authenticate().buildRedditPagesConfig(bEntity.getName(),5,Sort.TOP);
@@ -120,40 +121,13 @@ public class ImageView extends HttpServlet{
                  imageLogic.add(image);
                 
             }
-            
-            //Process Request
-            
-            
+           
         };
-    
-//        Consumer<KijijiItem> lambda = (KijijiItem item) -> {
-//            Image image;
-//            Item dbItem;
-//            if (il.getWithId(Integer.parseInt(item.getId())) == null) { //If item does not already exists
-//                Map<String, String[]> imageMap = new HashMap<>();
-//                imageMap.put(ImageLogic.NAME, new String[]{item.getImageName()});
-//                imageMap.put(ImageLogic.PATH, new String[]{System.getProperty("user.home") + "/KijijiImages/" + item.getId() + ".jpg"});
-//                imageMap.put(ImageLogic.URL, new String[]{item.getImageUrl()});
-//                image = imageLogic.createEntity(imageMap);
-//                
-//                FileUtility.downloadAndSaveFile(item.getImageUrl(), System.getProperty("user.home") + "/KijijiImages/", item.getId() + ".jpg");
-//                if(imageLogic.getWithPath(image.getPath())==null)
-//                imageLogic.add(image);    
-//                
-//
-//                Map<String, String[]> itemMap = new HashMap<>();
-//                itemMap.put(ItemLogic.TITLE, new String[]{item.getTitle()});
-//               
-//                dbItem = il.createEntity(itemMap);
-//                dbItem.setCategory(cl.getWithUrl(url));
-//                dbItem.setImage(imageLogic.getWithPath(image.getPath()));
-//                il.add(dbItem);
-//            }
-//        };
-//        kijiji.proccessItems(lambda);
-//        processRequest(request, response);
-
-    }   
+        
+        //Process Request
+         obj.requestNextPage().proccessNextPage(saveImage);
+            processRequest(request, response);
+   }   
     
     
     
@@ -184,7 +158,7 @@ public class ImageView extends HttpServlet{
 //            //if duplicate print the error message
 //            errorMessage = "Username: \"" + username + "\" already exists";
 //        }
-       
+        processRequest(request, response);
     }
 
     /**
