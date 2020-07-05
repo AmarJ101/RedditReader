@@ -12,11 +12,15 @@ import entity.Image;
 import logic.AccountLogic;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -43,7 +47,7 @@ public class ImageView extends HttpServlet{
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String cssTag = "<link rel='stylesheet' type='text/css' href='../../webapp/style/imageview.css'>";
+//        String cssTag = "<link rel='stylesheet' type='text/css' href='../../webapp/style/imageview.css'>";
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             
@@ -51,21 +55,21 @@ public class ImageView extends HttpServlet{
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println(cssTag);
-            out.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"style/imageview.css\">");
+//            out.println(cssTag);
+            out.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"style/ImageView.css\">");
             out.println("<title>ImageView</title>");
             out.println("</head>");            
             out.println("<body>");
             
-//            ImageLogic imageLogic = new ImageLogic();
-            ImageLogic imageLogic = LogicFactory.getFor("image");
+            ImageLogic imageLogic = LogicFactory.getFor("Image");
             List<Image> imageList = imageLogic.getAll();
             for (Image image : imageList){
             
-                
+            URL urlObj = new URL(image.getUrl());
+            String fileName = urlObj.getFile();
             out.println("<div align=\"center\">");
              out.println("<div align=\"center\" class=\"imageContainer\">");
-             out.println("<img class=\"imageThumb\" src=\"image/"+FileUtility.getFileName(image.getUrl())+"\"/>");
+             out.println("<img class=\"imageThumb\" src=\"image/"+fileName+"\"/>");
              out.println("</div>");
             out.println("</div>");
             
@@ -110,24 +114,38 @@ public class ImageView extends HttpServlet{
          //create a lambda that accepts post
         Consumer<Post> saveImage = (Post post) -> {
             //if post is an image and SFW
-            if (post.isImage() && !post.isOver18() && imageLogic.getImageWithUrl(post.getUrl())==null) {
+            if (post.isImage() && !post.isOver18()) {
                 //get the path for the image which is unique
                 String url = post.getUrl();
-               //save it in img directory
-                FileUtility.downloadAndSaveFile(url, path);
+                URL urlObj;
+                String name = null;
+                try {
+                    urlObj = new URL(url);
                 
+            //if name is null use the name in url
+            if (name == null || name.isEmpty()) {
+                name = urlObj.getFile();
+            }
+            if(name.contains("?")){
+                name = name.substring(0, name.indexOf("?"));
+            }
+                } catch (MalformedURLException ex) {
+                    Logger.getLogger(ImageView.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 
                  Map<String, String[]> imageMap = new HashMap<>();
                 imageMap.put(ImageLogic.TITLE, new String[]{post.getTitle()});
-                imageMap.put(ImageLogic.LOCAL_PATH, new String[]{path});
+                imageMap.put(ImageLogic.LOCAL_PATH, new String[]{System.getProperty("user.home") +"/My Documents/Reddit Images"+name});
                 imageMap.put(ImageLogic.URL, new String[]{url});
                 imageMap.put(ImageLogic.DATE, new String[]{imageLogic.convertDate(post.getDate())});
 //                imageMap.put(ImageLogic.BOARD_ID, new String[]{bEntity.getId().toString()});
                 
                 Image image= imageLogic.createEntity(imageMap);
                 image.setBoard(bEntity);
+                if(imageLogic.getImageWithLocalPath(image.getLocalPath())==null){
+                FileUtility.downloadAndSaveFile(url, path);
                 //Add image to DB
-                 imageLogic.add(image);
+                 imageLogic.add(image);}
                 
             }
            

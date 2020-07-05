@@ -64,6 +64,6 @@ public class ImageDAL extends GenericDAL<Image>{
     public Image findByLocalPath(String localPath){
         Map<String, Object> map = new HashMap<>();
         map.put("localPath", localPath);
-        return findResult( "Image.validateUser", map);
+        return findResult( "Image.findByLocalPath", map);
     }
 }

@@ -53,11 +53,9 @@ public class ImageDelivery extends HttpServlet {
         
         String imageDirectory = System.getProperty("user.home");
         String fileName = req.getPathInfo();
-        
+        System.out.println("------------------------------------------------------------------"+fileName+"--------------------------");
         //File will hold the path name where the images are.
-        File file = new File(imageDirectory + "/My Documents/Reddit Images", fileName);
-        
-        //Sets the headers based of the information from the images.
+        File file = new File(imageDirectory + "/My Documents/Reddit Images"+fileName);
         resp.setHeader("Content-Type", getServletContext().getMimeType(fileName));
         resp.setHeader("Content-Length", String.valueOf(file.length()));
         resp.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
