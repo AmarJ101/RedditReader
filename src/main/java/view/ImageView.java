@@ -122,9 +122,10 @@ public class ImageView extends HttpServlet{
                 imageMap.put(ImageLogic.LOCAL_PATH, new String[]{path});
                 imageMap.put(ImageLogic.URL, new String[]{url});
                 imageMap.put(ImageLogic.DATE, new String[]{imageLogic.convertDate(post.getDate())});
-                imageMap.put(ImageLogic.BOARD_ID, new String[]{bEntity.getId().toString()});
+//                imageMap.put(ImageLogic.BOARD_ID, new String[]{bEntity.getId().toString()});
+                
                 Image image= imageLogic.createEntity(imageMap);
-
+                image.setBoard(bEntity);
                 //Add image to DB
                  imageLogic.add(image);
                 
