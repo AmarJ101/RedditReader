@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import javax.servlet.ServletException;
@@ -49,15 +50,22 @@ public class ImageView extends HttpServlet{
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<body>");
+            
+//            ImageLogic imageLogic = new ImageLogic();
+            ImageLogic imageLogic = LogicFactory.getFor("image");
+            List<Image> imageList = imageLogic.getAll();
+            for (Image image : imageList){
+            
+                
             out.println("<div align=\"center\">");
              out.println("<div align=\"center\" class=\"imageContainer\">");
-             out.println("<img class=\"imageThumb\" src=\"image/[image_name]\"/>");
+             out.println("<img class=\"imageThumb\" src=\"image/"+image.getLocalPath()+"\"/>");
              out.println("</div>");
             out.println("</div>");
             
             
             
-            
+        }
                out.println("</body>");
             out.println("</html>");
         }
@@ -87,18 +95,12 @@ public class ImageView extends HttpServlet{
        
         String path=System.getProperty("user.home") +"/My Documents/Reddit Images/";
         FileUtility.createDirectory(path);
-        ImageLogic imageLogic = LogicFactory.getFor("image");
+        ImageLogic imageLogic = LogicFactory.getFor("Image");
+        BoardLogic boardLogic = LogicFactory.getFor("Board");       
+        Board bEntity = boardLogic.getAll().get(0);
         
-        
-      
-        
-        BoardLogic boardLogic = LogicFactory.getFor("board");       
-        Board bEntity = boardLogic.getBoardsWithName("EarthPorn").get(0);//get(1)??
-        
-        //System.out.println("---------------------------->>>>>>>>>>>>"+bEntity.getName());
-        //
         Reddit obj= new Reddit();
-        obj.authenticate().buildRedditPagesConfig(bEntity.getName(),5,Sort.TOP);
+          obj.authenticate().buildRedditPagesConfig(bEntity.getName(), 5, Sort.BEST);
          //create a lambda that accepts post
         Consumer<Post> saveImage = (Post post) -> {
             //if post is an image and SFW
@@ -117,7 +119,7 @@ public class ImageView extends HttpServlet{
                 imageMap.put(ImageLogic.BOARD_ID, new String[]{bEntity.getId().toString()});
                 Image image= imageLogic.createEntity(imageMap);
 
-                //Add image to DB if doesnt exist
+                //Add image to DB
                  imageLogic.add(image);
                 
             }

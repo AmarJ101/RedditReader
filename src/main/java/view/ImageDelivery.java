@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author Khosla
+ * @author Navraj Khosla
  */
 
 @WebServlet(name = "ImageDelivery", urlPatterns = {"/image/*"})
@@ -54,12 +54,15 @@ public class ImageDelivery extends HttpServlet {
         String imageDirectory = System.getProperty("user.home");
         String fileName = req.getPathInfo();
         
+        //File will hold the path name where the images are.
         File file = new File(imageDirectory + "/My Documents/Reddit Images", fileName);
         
+        //Sets the headers based of the information from the images.
         resp.setHeader("Content-Type", getServletContext().getMimeType(fileName));
         resp.setHeader("Content-Length", String.valueOf(file.length()));
         resp.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
-        
+       
+       //Copies the file to the output stream
        Files.copy(file.toPath(), resp.getOutputStream());
           
     }
