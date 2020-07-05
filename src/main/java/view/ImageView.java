@@ -43,12 +43,18 @@ public class ImageView extends HttpServlet{
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String cssTag = "<link rel='stylesheet' type='text/css' href='../../webapp/style/imageview.css'>";
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             
             
             out.println("<!DOCTYPE html>");
             out.println("<html>");
+            out.println("<head>");
+            out.println(cssTag);
+            out.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"style/imageview.css\">");
+            out.println("<title>ImageView</title>");
+            out.println("</head>");            
             out.println("<body>");
             
 //            ImageLogic imageLogic = new ImageLogic();
@@ -59,7 +65,7 @@ public class ImageView extends HttpServlet{
                 
             out.println("<div align=\"center\">");
              out.println("<div align=\"center\" class=\"imageContainer\">");
-             out.println("<img class=\"imageThumb\" src=\"image/"+image.getLocalPath()+"\"/>");
+             out.println("<img class=\"imageThumb\" src=\"image/"+FileUtility.getFileName(image.getUrl())+"\"/>");
              out.println("</div>");
             out.println("</div>");
             
@@ -100,11 +106,11 @@ public class ImageView extends HttpServlet{
         Board bEntity = boardLogic.getAll().get(0);
         
         Reddit obj= new Reddit();
-          obj.authenticate().buildRedditPagesConfig(bEntity.getName(), 5, Sort.BEST);
+          obj.authenticate().buildRedditPagesConfig(bEntity.getName(), 20, Sort.BEST);
          //create a lambda that accepts post
         Consumer<Post> saveImage = (Post post) -> {
             //if post is an image and SFW
-            if (post.isImage() && post.isOver18() && imageLogic.getImageWithUrl(post.getUrl())==null) {
+            if (post.isImage() && !post.isOver18() && imageLogic.getImageWithUrl(post.getUrl())==null) {
                 //get the path for the image which is unique
                 String url = post.getUrl();
                //save it in img directory
@@ -115,7 +121,7 @@ public class ImageView extends HttpServlet{
                 imageMap.put(ImageLogic.TITLE, new String[]{post.getTitle()});
                 imageMap.put(ImageLogic.LOCAL_PATH, new String[]{path});
                 imageMap.put(ImageLogic.URL, new String[]{url});
-                imageMap.put(ImageLogic.DATE, new String[]{post.getDate().toString()});
+                imageMap.put(ImageLogic.DATE, new String[]{imageLogic.convertDate(post.getDate())});
                 imageMap.put(ImageLogic.BOARD_ID, new String[]{bEntity.getId().toString()});
                 Image image= imageLogic.createEntity(imageMap);
 
@@ -126,9 +132,10 @@ public class ImageView extends HttpServlet{
            
         };
         
+        
         //Process Request
          obj.requestNextPage().proccessNextPage(saveImage);
-            processRequest(request, response);
+         processRequest(request, response);
    }   
     
     
@@ -151,15 +158,7 @@ public class ImageView extends HttpServlet{
             throws ServletException, IOException {
         log("POST");
         
-//        AccountLogic aLogic = new AccountLogic();
-//        String username = request.getParameter(AccountLogic.USERNAME);
-//        if(aLogic.getAccountWithUsername(username)==null){
-//            Account account = aLogic.createEntity( request.getParameterMap());
-//            aLogic.add(account);
-//        }else{
-//            //if duplicate print the error message
-//            errorMessage = "Username: \"" + username + "\" already exists";
-//        }
+
         processRequest(request, response);
     }
 

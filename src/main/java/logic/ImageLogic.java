@@ -72,10 +72,7 @@ public class ImageLogic  extends GenericLogic<Image, ImageDAL> {
     
     public Image createEntity(Map<String, String[]> parameterMap){
         Objects.requireNonNull(parameterMap, "parameterMap cannot be null");
-        //same as if condition below
-        //        if (parameterMap == null) {
-        //            throw new NullPointerException("parameterMap cannot be null");
-        //        }
+       
 
         //create a new Entity object
         Image entity = new Image();
